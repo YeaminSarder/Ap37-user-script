@@ -4,7 +4,7 @@
 
 
     var color2 = {
-
+        prefPalette:'cyberGreen', //select from colour2.palette
         palette: {
             rainbow: '#9400d3 #4b0082 #0000ff #00ff00 #ffff00 #ff7f00 #ff0000'.split(' '),
             cyber: [
@@ -13,6 +13,27 @@
                 '#d0902f',//redsun
                 '#a15501',//earth
                 '#351409'//shadow
+            ],
+            cyberGreen : [
+                '#a0ffe3',//light green
+                '#65dc95',//green
+                '#8d8980',//gray
+                '#575267',//violet
+                '#222035',//black
+            ],
+            cyberPlink : [
+                '#ff2a6d',//red
+                '#d1f7ff',//whiete
+                '#05d9e8',//blue
+                '#005678',//lite blue
+                '#01012b',//black
+            ],
+            cyberRadiation : [
+                '#ff124f',//red
+                '#ff00a0',//whiete
+                '#fe75fe',//blue
+                '#7a04eb',//lite blue
+                '#120458',//black
             ]
         }
     }
@@ -49,34 +70,31 @@
             cyber: { 
                 keyboard: {
                     activator: ['blue','teal'],
-                    key: color2.palette.cyber[3]
+                    key: color2.palette[color2.prefPalette][3]
                 },
                 apps: {
                     activator: ['blue','teal'],
                     name: {
-                        base: color2.palette.cyber[1],
-                        accent: color2.palette.cyber[0],
-                        dash: color2.palette.cyber[1]
+                        base: color2.palette[color2.prefPalette][1],
+                        accent: color2.palette[color2.prefPalette][0],
+                        dash: color2.palette[color2.prefPalette][1]
                     },
-                    number: {
-                        total: 'blue',
-                        loaded: 'blue'
-                    }
+                 
                 },
                 toggle: {
                     strict: ['blue','teal'],
                     auto: ['blue','teal']
                 },
                 bareText: {
-                    myName: color2.palette.cyber[0],
-                    battery: color2.palette.cyber[1],
-                    time: color2.palette.cyber[1],
-                    filter: color2.palette.cyber[0],
-                    filterLong: color2.palette.cyber[1],
-                    total: color2.palette.cyber[3],
-                    eof: color2.palette.cyber[0],
-                    clicked: color2.palette.cyber[0],
-                    shownApp: color2.palette.cyber[3],
+                    myName: color2.palette[color2.prefPalette][0],
+                    battery: color2.palette[color2.prefPalette][1],
+                    time: color2.palette[color2.prefPalette][1],
+                    filter: color2.palette[color2.prefPalette][0],
+                    filterLong: color2.palette[color2.prefPalette][1],
+                    total: color2.palette[color2.prefPalette][3],
+                    eof: color2.palette[color2.prefPalette][0],
+                    clicked: color2.palette[color2.prefPalette][0],
+                    shownApp: color2.palette[color2.prefPalette][3],
                 }
 
             }
@@ -116,8 +134,8 @@
 
 
     }
-    color.setOnOffColor('cyber',1,color2.palette.cyber[2])
-    color.setOnOffColor('cyber',0,color2.palette.cyber[4])
+    color.setOnOffColor('cyber',1,color2.palette[color2.prefPalette][2])
+    color.setOnOffColor('cyber',0,color2.palette[color2.prefPalette][4])
 
 
     function init() {
@@ -1043,3 +1061,4 @@ function arrayFill(value, length) {
 init();
 })();
 
+// pull requests github.com/apseren/ap37
