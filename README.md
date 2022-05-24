@@ -8,3 +8,39 @@ This is a custom user script for the launcher ap37 with added keyboard and other
     - Use Google Keyboard's text editor mode to easily paste into the editor.
     - Or, use keyboards like [Unexpected keyboard](https://www.google.com/url?sa=t&source=web&rct=j&url=https://github.com/Julow/Unexpected-Keyboard&ved=2ahUKEwjm5IW9v_f3AhXDUGwGHc_QADMQFnoECA0QAQ&usg=AOvVaw3J-KBuXXBJGetJ9lKA2dNT) or [hacker's keyboard](https://www.google.com/url?sa=t&source=web&rct=j&url=https://play.google.com/store/apps/details%3Fid%3Dorg.pocketworkstation.pckeyboard%26hl%3Den%26gl%3DUS%26referrer%3Dutm_source%253Dgoogle%2526utm_medium%253Dorganic%2526utm_term%253Dhacker%27s%2Bkeyboard%26pcampaignid%3DAPPU_1_wHmMYtrdNd-H5OUPluK_qAM&ved=2ahUKEwjavb3mv_f3AhXfA7kGHRbxDzUQ5YQBegQIAxAC&sqi=2&usg=AOvVaw2CX-vl4STmiZCBMhhXSmDh) to Copy/Paste.
 5. Enjoy.
+
+# Features
+1. Open Source
+2. Added keyboard
+    - Custom keyboard
+3. Cooler app names using dropped vowels
+   - eg
+     - Facebook -> FCBK
+     - Google Drive -> GGlE DRVE
+   - last vowels are preserved for readability
+4. Auto make aliases for app names
+    - Alias charecters are highlited in the app list and also printed on Capital letter.
+    - eg
+        - facebook -> FcBk
+        - Google Drive -> Ggle Drve
+        - FB and GD are the aliases respectively
+5. Smart Search
+    - if Strict: off
+        - convert keyword to lowercase and Search case insensitively
+        - use space as wildcards
+             - as .* in regex and * in shells
+        - eg
+            - FcBk can be matched by 'fc', 'FC', ' ck', ' bk', 'f k' etc
+            - FcBk will not match 'ck', 'bk', 'fk'
+            
+    - if Strict: on
+        - conver keyword to upper case and Search case sensitively
+            that means only Alias Charecters will match
+        - .* wildcards are autometically added before search keyword and between charecters
+        - eg
+            - FcBk can be matched by 'F', 'B' and 'FB'
+            - FcBk will not match 'C', 'c', 'Fc'
+6. Auto launch
+    - if only one app matches the search the app will instantly open even enter key is not pressed
+    - That means in Strict mode typing FB will instantly open facebook. Because aliases are unique.
+7. Easy Customizations
