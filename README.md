@@ -11,14 +11,15 @@ This is a custom user script for the launcher ap37 with added keyboard and other
 
 # Features
 1. Open Source
-2. Added keyboard
+2. Keyboard Support
     - Custom keyboard
 3. Cooler app names using dropped vowels
    - eg
      - Facebook -> FCBK
      - Google Drive -> GGlE DRVE
    - last vowels are preserved for readability
-4. Auto make aliases for app names
+4. Aliases
+    - Autometically makes abbreviations for apps
     - Alias charecters are highlited in the app list and also printed on Capital letter.
     - eg
         - facebook -> FcBk
@@ -42,5 +43,6 @@ This is a custom user script for the launcher ap37 with added keyboard and other
             - FcBk will not match 'C', 'c', 'Fc'
 6. Auto launch
     - if only one app matches the search the app will instantly open even enter key is not pressed
-    - That means in Strict mode typing FB will instantly open facebook. Because aliases are unique.
+    - That means in Strict mode typing 'FB' will instantly open facebook. Because aliases are unique.
 7. Easy Customizations
+8. Intercept loading and reload on keypress
