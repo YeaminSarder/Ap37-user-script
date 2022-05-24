@@ -46,3 +46,4 @@ This is a custom user script for the launcher ap37 with added keyboard and other
     - That means in Strict mode typing 'FB' will instantly open facebook. Because aliases are unique.
 7. Easy Customizations
 8. Intercept loading and reload on keypress
+![image](Screenshot_2022-05-24-13-14-24-80_7fc409285d4681be8665df281b86a4b0.jpg)
