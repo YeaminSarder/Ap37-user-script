@@ -2,7 +2,8 @@
     'use strict';
     var w, h;
 
-
+    //before init {{{1
+    //color2 {{{2
     var color2 = {
         prefPalette:'cyberGreen', //select from colour2.palette
         palette: {
@@ -39,7 +40,7 @@
     }
 
 
-
+    //color {{{2
     var color= {
         prefScheme: 'cyber',
         palette: color2.palette ,
@@ -79,11 +80,14 @@
                         accent: color2.palette[color2.prefPalette][0],
                         dash: color2.palette[color2.prefPalette][1]
                     },
-                 
+
                 },
                 toggle: {
                     strict: ['blue','teal'],
                     auto: ['blue','teal']
+                },
+                matrix: {
+                    color: '#00ff00'
                 },
                 bareText: {
                     myName: color2.palette[color2.prefPalette][0],
@@ -131,23 +135,24 @@
         getFromP: function (p) {
             return color.palette[p][color.i%color.palette[p].length]
         }
-
-
     }
     color.setOnOffColor('cyber',1,color2.palette[color2.prefPalette][2])
     color.setOnOffColor('cyber',0,color2.palette[color2.prefPalette][4])
 
-
+    //init {{{1 
+    //{{{
     function init() {
         ap37.setTextSize(10);
         w = ap37.getScreenWidth();
         h = ap37.getScreenHeight();
-        ////inits__________________________
+        //}}}
+        ////inits {{{2
         background.init();
         print(5, 0, 'Yeamin Sarder',color.scheme('[color.prefScheme].bareText.myName'));
         battery.init();
         time.init();
         //notifications.init();
+        matrix.init();
         keyboard.init();
         apps.construct();
         apps.init();
@@ -157,21 +162,22 @@
 
         //var o=''
         var clicked=0
-        var myButton_Load_Apps = myAddButton(5,2,'','','Shown   ',function () {
+        // adding buttons {{{2
+        var myButton_Load_Apps = myAddButton(5,2,'','','Shown   ',function () { //{{{3
             this.color2 = color.scheme('[color.prefScheme].apps.activator')[apps.isHidden]
             if (apps.isHidden){
                 this.text = 'Shown   ';
-                        apps.isIntercept=1;
-                        setTimeout(apps.init,1);
+                apps.isIntercept=1;
+                setTimeout(apps.init,1);
             } else {
                 this.text = 'Hidden  ';
-                        apps.isIntercept=1;
+                apps.isIntercept=1;
                 apps.hide();
             }
             //o=apps.isHidden;
         },color.scheme('[color.prefScheme].apps.activator[1]'));
         //myButton_Load_Apps.text = 'Hide_A';
-        var myButton_Toggle_Strict = myAddButton(20,2,'','','Strict:ON',function () {
+        var myButton_Toggle_Strict = myAddButton(20,2,'','','Strict:ON',function () { //{{{3
             if (apps.isStrict){
                 this.text = 'Strict:OFF';
                 apps.isStrict = 0;
@@ -181,7 +187,7 @@
             }
             this.color2 = color.scheme('[color.prefScheme].toggle.strict')[apps.isStrict]
         },color.scheme('[color.prefScheme].toggle.strict')[apps.isStrict]);
-        var myButton_Toggle_Strict = myAddButton(35,2,'','','Auto:ON',function () {
+        var myButton_Toggle_Auto = myAddButton(35,2,'','','Auto:ON',function () { //{{{3
             if (apps.isAuto){
                 this.text = 'Auto:OFF';
                 apps.isAuto = 0;
@@ -192,21 +198,34 @@
             this.color2 = color.scheme('[color.prefScheme].toggle.auto')[apps.isAuto]
         },color.scheme('[color.prefScheme].toggle.auto')[apps.isAuto])
 
-        var myB_Keyboard = myAddButton(0,h-2,10,h-1,' KEYBOARD ',function () {
+        var myButton_Toggle_Matrix = myAddButton(50,2,'','','Matrix:Off',function () { //{{{3
+            if (matrix.isOn){
+                this.text = 'Matrix:OFF';
+                matrix.isOn = 0;
+                matrix.onTurnOff();
+            } else {
+                this.text = 'Matrix: ON';
+                matrix.isOn = 1;
+                matrix.onTurnOn();
+            }
+            this.color2 = color.scheme('[color.prefScheme].toggle.auto')[apps.isAuto]
+        },color.scheme('[color.prefScheme].toggle.auto')[apps.isAuto])
+
+        var myB_Keyboard = myAddButton(0,h-2,10,h-1,' KEYBOARD ',function () { //{{{3
             var tmp=keyboard.isOn ? 0:1;
             this.color2 = color.scheme('[color.prefScheme].keyboard.activator')[tmp]
             if (keyboard.isOn) {
                 keyboard.isOn = 0;
                 keyboard.hide();
                 apps.bottomMargin = apps.bottomMargin2;
-                        apps.isIntercept=1;
-                        setTimeout(apps.init,1);
+                apps.isIntercept=1;
+                setTimeout(apps.init,1);
             } else {
                 keyboard.isOn = 1;
                 keyboard.draw();
                 apps.bottomMargin = h - keyboard.topMargin;
-                        apps.isIntercept=1;
-                        setTimeout(apps.init,1);
+                apps.isIntercept=1;
+                setTimeout(apps.init,1);
             }
             //alert(keyboard.layout[0]);
         },color.scheme('[color.prefScheme].keyboard.activator')[keyboard.isOn]);
@@ -224,7 +243,7 @@
         */
 
         //button0.onclick()
-
+        // touch {{{2
         ap37.setOnTouchListener(function (x, y) {
             //notifications.onTouch(x, y);
             if (!apps.isHidden) {
@@ -241,11 +260,11 @@
     }
 
 
-    //-----------------------------------------------------------------End_of_init
+    // after init {{{1
 
-    // functions
+    // functions {{{2
 
-    function myAddButton(x1,y1,x2,y2,text,func,color) {
+    function myAddButton(x1,y1,x2,y2,text,func,color) { // {{{3
         if (!x2){x2 = x1 + text.length - 1};
         if (!y2){y2 = y1};
         print(x1,Math.floor((y1+y2)/2),text,color);
@@ -279,7 +298,7 @@
 
 
 
-    function printCC(x1,y1,text,color2){
+    function printCC(x1,y1,text,color2){ // {{{3
         for (var i=x1;i<x1+text.length;i++){
             color.i=keyboard.chars.indexOf(text.substr(i-x1,1).toLowerCase());
             print(i,y1,text.substr(i-x1,1),color.getFromP(0));
@@ -288,7 +307,7 @@
 
 
 
-    function printCapital(x,y,text,color2){
+    function printCapital(x,y,text,color2){ //{{{3
         for (var i=0;i<text.length;i++) {
             if (text[i].isCap()) {
                 print(x+i,y,text[i],color2);
@@ -296,15 +315,15 @@
         }
     }
 
+    
 
-
-    String.prototype.isCap = function (char) {
+    String.prototype.isCap = function (char) { //{{{3
         return ( this.toUpperCase() == this && /[a-zA-Z]/.test(this))
     }
 
 
 
-    String.prototype.replaceAt = function(index, replacement) {
+    String.prototype.replaceAt = function(index, replacement) { //{{{3
             if (index >= this.length) {
                     return this.valueOf();
                 }
@@ -334,12 +353,12 @@
 
 
 
-
+    // objects {{{2
 
 var prefs = {
     color: color
 }
-var buttons = {
+var buttons = {  //{{{3
     list: [],
 
     onTouch: function (x,y) {
@@ -357,7 +376,7 @@ var buttons = {
     }
 
 }
-var cursor = {
+var cursor = { // {{{3
     x:0,
     y:3,
     advance: function (n){
@@ -365,7 +384,14 @@ var cursor = {
         cursor.x=(cursor.x+n)%w
     }
 }
-var keyboard = {
+
+
+
+
+
+
+
+var keyboard = {  //{{{3
     layout: [
         '1234567890'.split(''),
         'QWERTYUIOP'.split(''),
@@ -380,7 +406,7 @@ var keyboard = {
         this.controlActive = bool
         this.key[3][0].text = 'CTRL'
     },
-    init: function () {
+    init: function () {  //{{{4
 
         keyboard.topMargin = Math.floor(h*.75);
         keyboard.bottomMargin = (h-2)*1;
@@ -391,7 +417,7 @@ var keyboard = {
         keyboard.keyHeight = Math.floor(keyboard.height/keyboard.layout.length);
         keyboard.keyPad = Math.ceil(keyboard.keyWidth/2)
     },
-    draw: function () {
+    draw: function () { //{{{4
         for (var j=0; j< keyboard.layout.length;j++){
             var linePad = Math.floor((w-keyboard.layout[j].length*keyboard.keyWidth)/2)
             for (var k=0;k<keyboard.keyHeight;k++) {
@@ -406,7 +432,7 @@ var keyboard = {
                     linePad + (i+1)*keyboard.keyWidth-1,
                     keyboard.topMargin+(j+1)*keyboard.keyHeight-1,
                     ' '.repeat(Math.floor((keyboard.keyWidth-keyboard.layout[j][i].length)/2)) + keyboard.layout[j][i],
-                    function () {
+                    function () {  //{{{5
                         switch (this.name) {
                             case 'bksp':
                                 if (keyboard.ctrlActive) {
@@ -459,7 +485,7 @@ var keyboard = {
         }
     },
 
-    hide: function () {
+    hide: function () {  // {{{4
         for (var i=keyboard.topMargin;i<keyboard.bottomMargin;i++){
             //print(0,i,' '.repeat(w));
             background.printPattern(0,w,i);
@@ -478,16 +504,17 @@ var keyboard = {
 
 //modules
 
-var background = {
+var background = {  //{{{3
     buffer: [],
     bufferColors: [],
     pattern: '',
-    printPattern: function (x0, xf, y) {
+    printPattern: function (x0, xf, y) { //{{{4
         print(x0, y,
             background.pattern.substring(y * w + x0, y * w + xf),
             '#333333');
     },
-    init: function () {
+    init: function () {//{{{4
+
         background.pattern = rightPad(script, h * w, ' ');
 
         for (var i = 0; i < h; i++) {
@@ -499,7 +526,8 @@ var background = {
     }
 };
 
-var time = {
+var time = {//{{{3
+
     update: function () {
         var d = ap37.getDate();
         var time = d.year +
@@ -513,7 +541,8 @@ var time = {
     }
 };
 
-var battery = {
+var battery = {//{{{3
+
     update: function () {
         print(Math.floor(w*0.6), 0,
             leftPad(ap37.getBatteryLevel(), 3, ' ')+'%',color.scheme('[color.prefScheme].bareText.battery'));
@@ -524,7 +553,8 @@ var battery = {
     }
 };
 
-var notifications = {
+var notifications = {//{{{3
+
     list: [],
     active: false,
     update: function () {
@@ -580,7 +610,8 @@ var notifications = {
     }
 };
 
-var apps = {
+var apps = {//{{{3
+
     list: [],
     lineHeight: 2,
     topMargin: 6,
@@ -599,7 +630,8 @@ var apps = {
     isStrict:1,
     isAuto:1,
     filter:'',
-    printPage: function () {
+    printPage: function () {//{{{4
+
         if (apps.runState==2){
             //load proggress
 
@@ -679,7 +711,8 @@ var apps = {
         //apps.runState = 0;
 
     },
-    printApp: function (app, highlight) {
+    printApp: function (app, highlight) {//{{{4
+
         color.i= keyboard.chars.indexOf(app.name.substring(0,1).toLowerCase())
 
         //uncomment next line to enable short name for apps;
@@ -706,7 +739,8 @@ var apps = {
         }
 
     },
-    construct: function () {
+    construct: function () {//{{{4
+
         apps.unique =[];
         apps.list2 = ap37.getApps();
         apps.list2.map(function (v,i,a){
@@ -767,7 +801,8 @@ var apps = {
                 b.name.length
         }
     },
-    init: function () {
+    init: function () {//{{{4
+
         apps.isIntercept=0;
         if (apps.isStrict) {
             var pattern= eval('/.*'+apps.filter.toUpperCase().split('').join('.*')+'/');
@@ -782,8 +817,8 @@ var apps = {
         if (apps.isAuto && apps.list.length == 1) {
             ap37.openApp(apps.list[0].id);
             apps.filter = '';
-                        apps.isIntercept=1;
-                        setTimeout(apps.init,1);
+            apps.isIntercept=1;
+            setTimeout(apps.init,1);
         }
         print(0,5,apps.list.length,color.scheme('[color.prefScheme].bareText.shownApp'));
         apps.lines = Math.floor(
@@ -812,7 +847,8 @@ var apps = {
         apps.isHidden=0;
         ap37.setOnAppsListener(apps.construct);
     },
-    hide: function () {
+    hide: function () {//{{{4
+
         for (var i=apps.topMargin;i<h-apps.bottomMargin;i++){
             //print(0,i,' '.repeat(w));
             background.printPattern(0,w,i);
@@ -842,7 +878,106 @@ var apps = {
     }
 };
 
-var markets = {
+
+
+var matrix = {//{{{3
+
+    topMargin: apps.topMargin,
+    avg1: 21,
+    avg0: 13,
+    avg2: 30,
+    daemonInterval:40, 
+    charset:'abcdefghijklmnopqrstuvwxyz',
+
+    get bottomMargin() { return apps.bottomMargin},
+    init: function () {
+        matrix.charset
+        for (var i=33;i<128;i++){
+            matrix.charset += String.fromCharCode(i)
+        }
+        matrix.charsetLength=matrix.charset.length
+    },
+    onTurnOn: function () {//{{{4
+        if (matrix.catchMe) {
+            //
+        } else {    //first time running
+            
+
+            //matrix.w = 4;
+            for (var i=0;i < w;i++) {
+            matrix.startMasterDaemon(i);
+            }
+        }
+
+        //alert('matrix');
+    },
+
+
+
+    onTurnOff: function () {//{{{4
+        //alert('matrixOff');
+    },
+    startDaemon: function (mw,bool) {//{{{5
+        var i=matrix.topMargin
+
+        var daemon = setInterval(function (){
+            if (i < h - matrix.bottomMargin) {
+                print(mw,i,bool ?matrix.charset[Math.floor(Math.random()*matrix.charsetLength)]:' ','#00ff00')
+            } else {
+                clearInterval(daemon)
+            }
+            i++
+            if (!matrix.isOn){clearInterval(daemon)}
+            
+        },matrix.daemonInterval)
+        return daemon;
+    },
+    startMasterDaemon: function (mw) {//{{{5
+
+        var i=0;
+        var bool = 1;
+        var masterDaemon = setInterval(function (){
+            switch (bool) {
+                case 0:
+                    if (Math.random() < 1/matrix.avg0) {
+                        var daemon = matrix.startDaemon(mw,1)
+                        bool=1
+                    }
+                break;
+                case 1:
+                    if (Math.random() < 1/matrix.avg1) {
+                        var daemon = matrix.startDaemon(mw,0)
+                        bool=0
+                    }
+                    if (Math.random() < 1/matrix.avg2) {
+                        clearInterval(daemon);
+                        var daemon= matrix.startDaemon(mw,1)
+                    }
+                break;
+            }
+            
+           /* 
+            switch (true) {
+                
+                case i==0:
+                    matrix.startDaemon(matrix.w,1)
+                break;
+                case i==4:
+                    matrix.startDaemon(matrix.w,0)
+                break;
+                case i==200:
+                    clearInterval(masterDaemon)
+                break;
+            }*/
+            i++
+            if (!matrix.isOn){clearInterval(masterDaemon)}
+        },matrix.daemonInterval)
+    }
+
+}
+
+var markets = {//{{{3
+
     update: function () {
         get('https://api.cryptowat.ch/markets/prices', function (response) {
             try {
@@ -867,7 +1002,8 @@ var markets = {
     }
 };
 
-var transmissions = {
+var transmissions = {//{{{3
+
     list: [],
     update: function () {
         get('https://hacker-news.firebaseio.com/v0/topstories.json', function (response) {
@@ -920,7 +1056,8 @@ var transmissions = {
     }
 };
 
-var wordGlitch = {
+var wordGlitch = {//{{{3
+
     tick: 0,
     length: 0,
     x: 0,
@@ -966,7 +1103,8 @@ var wordGlitch = {
     }
 };
 
-var lineGlitch = {
+var lineGlitch = {//{{{3
+
     tick: 0,
     line: 0,
     active: false,
@@ -1016,8 +1154,10 @@ var lineGlitch = {
 };
 
 //utils
+// core {{{2
 
-function print(x, y, text, color) {
+function print(x, y, text, color) {//{{{3
+
     color = color || '#ffffff';
     background.buffer[y] = background.buffer[y].substr(0, x) + text +
         background.buffer[y].substr(x + text.length);
@@ -1027,7 +1167,8 @@ function print(x, y, text, color) {
     ap37.print(x, y, text, color);
 }
 
-function get(url, callback) {
+function get(url, callback) {//{{{3
+
     var xhr = new XMLHttpRequest();
     xhr.open('GET', url, true);
     xhr.onload = function () {
@@ -1038,19 +1179,22 @@ function get(url, callback) {
     xhr.send();
 }
 
-function leftPad(str, newLength, char) {
+function leftPad(str, newLength, char) {//{{{3
+
     str = str.toString();
     return newLength > str.length ?
         new Array(newLength - str.length + 1).join(char) + str : str;
 }
 
-function rightPad(str, newLength, char) {
+function rightPad(str, newLength, char) {//{{{3
+
     str = str.toString();
     return newLength > str.length ?
         str + new Array(newLength - str.length + 1).join(char) : str;
 }
 
-function arrayFill(value, length) {
+function arrayFill(value, length) {//{{{3
+
     var result = [];
     for (var i = 0; i < length; i++) {
         result.push(value);
@@ -1062,3 +1206,4 @@ init();
 })();
 
 // pull requests github.com/apseren/ap37
+// 
