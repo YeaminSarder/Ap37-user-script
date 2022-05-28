@@ -1,11 +1,19 @@
 (function script() {
     'use strict';
-    var w, h;
+    var w, h, resx, resy, fontw, fonth, yscale;
+        ap37.setTextSize(10);
+        w = ap37.getScreenWidth();
+        h = ap37.getScreenHeight();
+        resx=720;
+        resy=1600;
+        fontw = resx/w;
+        fonth = resy/h;
+        yscale=fonth/fontw
 
     //before init {{{1
     //color2 {{{2
     var color2 = {
-        prefPalette:'cyberGreen', //select from colour2.palette
+        prefPalette:'greenGreen', //select from colour2.palette
         palette: {
             rainbow: '#9400d3 #4b0082 #0000ff #00ff00 #ffff00 #ff7f00 #ff0000'.split(' '),
             cyber: [
@@ -35,6 +43,13 @@
                 '#fe75fe',//blue
                 '#7a04eb',//lite blue
                 '#120458',//black
+            ],
+            greenGreen : [
+                '#00ff00',//red
+                '#003300',//whiete
+                '#00c000',//blue
+                '#00ff00',//lite blue
+                '#003300',//black
             ]
         }
     }
@@ -71,14 +86,14 @@
             cyber: { 
                 keyboard: {
                     activator: ['blue','teal'],
-                    key: color2.palette[color2.prefPalette][3]
+                    get key() {return color2.palette[color2.prefPalette][3]}
                 },
                 apps: {
                     activator: ['blue','teal'],
                     name: {
-                        base: color2.palette[color2.prefPalette][1],
-                        accent: color2.palette[color2.prefPalette][0],
-                        dash: color2.palette[color2.prefPalette][1]
+                        get base() {return color2.palette[color2.prefPalette][1]},
+                        get accent(){ return color2.palette[color2.prefPalette][0]},
+                        get dash(){ return color2.palette[color2.prefPalette][1]}
                     },
 
                 },
@@ -90,15 +105,15 @@
                     color: '#00ff00'
                 },
                 bareText: {
-                    myName: color2.palette[color2.prefPalette][0],
-                    battery: color2.palette[color2.prefPalette][1],
-                    time: color2.palette[color2.prefPalette][1],
-                    filter: color2.palette[color2.prefPalette][0],
-                    filterLong: color2.palette[color2.prefPalette][1],
-                    total: color2.palette[color2.prefPalette][3],
-                    eof: color2.palette[color2.prefPalette][0],
-                    clicked: color2.palette[color2.prefPalette][0],
-                    shownApp: color2.palette[color2.prefPalette][3],
+                    get myName(){ return color2.palette[color2.prefPalette][0]},
+                    get battery(){ return color2.palette[color2.prefPalette][1]},
+                    get time(){ return color2.palette[color2.prefPalette][1]},
+                    get filter(){ return color2.palette[color2.prefPalette][0]},
+                    get filterLong(){ return color2.palette[color2.prefPalette][1]},
+                    get total(){ return color2.palette[color2.prefPalette][3]},
+                    get eof(){ return color2.palette[color2.prefPalette][0]},
+                    get clicked(){ return color2.palette[color2.prefPalette][0]},
+                    get shownApp(){ return color2.palette[color2.prefPalette][3]},
                 }
 
             }
@@ -142,9 +157,6 @@
     //init {{{1 
     //{{{
     function init() {
-        ap37.setTextSize(10);
-        w = ap37.getScreenWidth();
-        h = ap37.getScreenHeight();
         //}}}
         ////inits {{{2
         background.init();
@@ -208,8 +220,8 @@
                 matrix.isOn = 1;
                 matrix.onTurnOn();
             }
-            this.color2 = color.scheme('[color.prefScheme].toggle.auto')[apps.isAuto]
-        },color.scheme('[color.prefScheme].toggle.auto')[apps.isAuto])
+            this.color2 = color.scheme('[color.prefScheme].toggle.auto')[matrix.isOn]
+        },color.scheme('[color.prefScheme].toggle.auto')[matrix.isOn])
 
         var myB_Keyboard = myAddButton(0,h-2,10,h-1,' KEYBOARD ',function () { //{{{3
             var tmp=keyboard.isOn ? 0:1;
@@ -243,6 +255,16 @@
         */
 
         //button0.onclick()
+        var myB_Command = myAddButton(11,h-2,20,h-1,' COMMAND ',function () { //{{{3
+            var input=prompt();
+            var output=eval(input);
+            if (output) {
+                alert(output);
+            }
+        },color.scheme('[color.prefScheme].keyboard.activator')[keyboard.isOn]);
+        //}}}
+        //comment next line to disable Keyboard at start
+        //myB_Keyboard.onclick();
         // touch {{{2
         ap37.setOnTouchListener(function (x, y) {
             //notifications.onTouch(x, y);
@@ -347,7 +369,48 @@
 //alert(str);
 
 
+function getAt(x,y) {    //{{{3
+    if (background.bufferColors[y][x] == '#333333') {return 0}
+    return [background.buffer[y][x],background.bufferColors[y][x]]
+}
+function drawCircle(x,y,r,text,color) {
+    text = text;
+    color = color;
+    var ddeg=1/r
+    for (var i=0;i<2*Math.PI;i+=ddeg) {
+        var xi=r*Math.cos(i)
+        var yi=r*Math.sin(i)
+        var nx=Math.round(x+r*Math.cos(i))
+        var ny=Math.round(y+r*Math.sin(i)/yscale)
 
+        if (nx<0||nx>=w||ny<0||ny>=h){continue}
+        var ga=getAt(nx,ny)
+        ap37.print(nx,ny,text?text:ga?ga[0]:' ',color?color:ga?ga[1]:'#ffffff')
+    }
+}
+function blastAt(x,y,d,l,t1,col1,t2,col2) {
+    col1=col1 || '#ffffff';
+    d=d || 1;
+    l=l || 72;
+var bool=0;
+    var i=0;
+    var j=0;
+    var blast = setInterval(function (){
+        drawCircle(x,y,i,t1,col1)
+        
+        i++
+        if (i>l){clearInterval(blast)}
+    },100)
+    var blast2 = setInterval(function (){
+        if (i>=d) {
+        drawCircle(x,y,j,t2,col2)
+        
+        j++
+        if (j>l){clearInterval(blast2)}
+        }
+    },100)
+}
+//drawCircle(30,30,10)
 
 
 
@@ -514,9 +577,9 @@ var background = {  //{{{3
             '#333333');
     },
     init: function () {//{{{4
-
-        background.pattern = rightPad(script, h * w, ' ');
-
+       
+       background.pattern = rightPad('', h * w, ' ');
+       
         for (var i = 0; i < h; i++) {
             background.buffer.push(background.pattern.substr(i * w, w));
             background.bufferColors.push(arrayFill('#333333', w));
@@ -686,6 +749,7 @@ var apps = {//{{{3
 
 
             appPos++;
+            print(0,5,rightPad(appPos,4,' '),color.scheme('[color.prefScheme].keyboard.key'))
             //save and take break if exhaused
             y += apps.lineHeight;
             if ( y >= apps.topMargin + apps.lines *apps.lineHeight) {
@@ -693,7 +757,7 @@ var apps = {//{{{3
                 x += apps.appWidth;
 
             }
-            print(4,4,leftPad(x,3,'0')+'     '+leftPad(y,3,'0'))
+            print(4,4,leftPad(x,3,' ')+'     '+leftPad(y,3,' '),color.scheme('[color.prefScheme].keyboard.key'))
             apps.lastX = x;
             apps.lastY = y;
             apps.lastAppPos=appPos;
@@ -887,8 +951,9 @@ var matrix = {//{{{3
     avg0: 13,
     avg2: 30,
     daemonInterval:40, 
+    isKind:0,
     charset:'abcdefghijklmnopqrstuvwxyz',
-
+    isOn:0,
     get bottomMargin() { return apps.bottomMargin},
     init: function () {
         matrix.charset
@@ -917,12 +982,16 @@ var matrix = {//{{{3
     onTurnOff: function () {//{{{4
         //alert('matrixOff');
     },
-    startDaemon: function (mw,bool) {//{{{5
+    startDaemon: function (mw,bool) {//{{{4
         var i=matrix.topMargin
 
         var daemon = setInterval(function (){
             if (i < h - matrix.bottomMargin) {
-                print(mw,i,bool ?matrix.charset[Math.floor(Math.random()*matrix.charsetLength)]:' ','#00ff00')
+                var ga=getAt(mw,i);
+                
+               if (!matrix.isKind || !ga) {
+                ap37.print(mw,i,bool ?matrix.charset[Math.floor(Math.random()*matrix.charsetLength)]:ga?ga[0]:' ',ga&&!bool?ga[1]:'#00ff00')
+               }
             } else {
                 clearInterval(daemon)
             }
@@ -932,7 +1001,7 @@ var matrix = {//{{{3
         },matrix.daemonInterval)
         return daemon;
     },
-    startMasterDaemon: function (mw) {//{{{5
+    startMasterDaemon: function (mw) {//{{{4
 
         var i=0;
         var bool = 1;
@@ -1205,5 +1274,3 @@ function arrayFill(value, length) {//{{{3
 init();
 })();
 
-// pull requests github.com/apseren/ap37
-// 
