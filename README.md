@@ -49,6 +49,8 @@ This is a custom user script for the launcher ap37 with added keyboard and other
 8. Intercept loading and reload on keypress
 
 # Changelog
+    v10.4 - apps now ordered by accending app name length and shifted to the left to show full name.
+important: touching an app no longer opens an app. use on screen keyboard
     v6.0 - added Matrix effect
          [img](Screenshot_2022-05-26-09-19-01-28_7fc409285d4681be8665df281b86a4b0.jpg)
     v5.1 - new colour pallettes
