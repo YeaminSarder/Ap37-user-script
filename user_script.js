@@ -46,7 +46,7 @@
             ],
             greenGreen : [
                 '#00ff00',//red
-                '#003300',//whiete
+                '#005500',//whiete
                 '#00c000',//blue
                 '#00ff00',//lite blue
                 '#003300',//black
@@ -179,10 +179,12 @@
             this.color2 = color.scheme('[color.prefScheme].apps.activator')[apps.isHidden]
             if (apps.isHidden){
                 this.text = 'Shown   ';
+                apps.isHidden=0;
                 apps.isIntercept=1;
                 setTimeout(apps.init,1);
             } else {
                 this.text = 'Hidden  ';
+                apps.isHidden=1;
                 apps.isIntercept=1;
                 apps.hide();
             }
@@ -269,12 +271,15 @@
         ap37.setOnTouchListener(function (x, y) {
             //notifications.onTouch(x, y);
             if (!apps.isHidden) {
-                apps.onTouch(x, y);
+                //apps.onTouch(x, y);
             }
             transmissions.onTouch(x, y);
             lineGlitch.onTouch(x, y);
             wordGlitch.onTouch(x, y);
             buttons.onTouch(x, y);
+            if (apps.isHidden && y>apps.topMargin && y< h-apps.bottomMargin){
+                cursor.putAt(x,y);
+            }
             clicked++
             print(0,2,clicked,color.scheme('[color.prefScheme].bareText.clicked'))
             //clearInterval(i1)
@@ -445,6 +450,10 @@ var cursor = { // {{{3
     advance: function (n){
         cursor.y=(cursor.y+Math.floor((cursor.x+n)/w))
         cursor.x=(cursor.x+n)%w
+    },
+    putAt: function (xi,yi) {
+        cursor.x=xi;
+        cursor.y=yi;
     }
 }
 
@@ -456,11 +465,27 @@ var cursor = { // {{{3
 
 var keyboard = {  //{{{3
     layout: [
-        '1234567890'.split(''),
-        'QWERTYUIOP'.split(''),
-        'ASDFGHJKL'.split(''),
-        'shift Z X C V B N M bksp'.split(' '),
-        'ctrl fn _ _ space _ _ arrow enter'.split(' ')
+        //'1234567890'.split(''),
+        'shift P Y F G C R L bksp'.split(' '),
+        'AOEUIDHTNS'.split(''),
+        'Q J K X B M W V Z'.split(' '),
+        'ctrl sym _ _ space _ _ arrow enter'.split(' ')
+    ],
+    layoutMaster: [
+        [ //default layout
+            '1234567890'.split(''),
+            'QWERTYUIOP'.split(''),
+            'ASDFGHJKL'.split(''),
+            'shift Z X C V B N M bksp'.split(' '),
+            'ctrl sym _ _ space _ _ arrow enter'.split(' ')
+        ],
+        [
+            '(){}[]<>'.split(''),
+            'QWERTYUIOP'.split(''),
+            'ASDFGHJKL'.split(''),
+            'shift Z X C V B N M bksp'.split(' '),
+            'ctrl abc abc _ space _ _ arrow enter'.split(' ')
+        ]
     ],
     chars: 'abcdefghijklmnopqrstuvwxyz0123456789'.split(''),
     key: [[]],
@@ -471,7 +496,7 @@ var keyboard = {  //{{{3
     },
     init: function () {  //{{{4
 
-        keyboard.topMargin = Math.floor(h*.75);
+        keyboard.topMargin = Math.floor(h*.67);
         keyboard.bottomMargin = (h-2)*1;
         keyboard.keyWidth = Math.floor(w/keyboard.maxKey);
 
@@ -515,8 +540,19 @@ var keyboard = {  //{{{3
                                 apps.filter+=' ';
                                 break;
                             case 'enter':
+                            case 'ENTER':
                                 ap37.openApp(apps.list[0].id);
                                 apps.filter = '';
+                                break;
+                            case 'sym':
+                                keyboard.layout=keyboard.layoutMaster[1];
+                                keyboard.hide();
+                                keyboard.draw();
+                                break;
+                            case 'abc':
+                                keyboard.layout=keyboard.layoutMaster[0];
+                                keyboard.hide();
+                                keyboard.draw();
                                 break;
                             case 'ctrl':
                                 if (keyboard.ctrlActive) {
@@ -529,15 +565,18 @@ var keyboard = {  //{{{3
 
                                 if (!(this.name == 'null')) {
                                     print(cursor.x,cursor.y,this.name,color.scheme('[color.prefScheme].bareText.filterLong'))
+                                    if (!apps.isHidden) {
                                     apps.filter+=this.name;
+                                    }
                                     cursor.advance(1)
                                 }
                         }
                         background.printPattern(0,w,4);
                         print(0,4,apps.filter,color.scheme('[color.prefScheme].bareText.filter'))
-                        apps.isIntercept=1;
-                        setTimeout(apps.init,1);
-
+                        if (!(this.name=='sym' ||this.name=='abc')){
+                            apps.isIntercept=1;
+                            setTimeout(apps.init,1);
+                        }
 
                     },
                     color.scheme('[color.prefScheme].keyboard.key')
@@ -559,6 +598,7 @@ var keyboard = {  //{{{3
                 buttons.del(keyboard.key[j][i])
             }
         }
+        keyboard.key=[];
 
 
     },
@@ -676,7 +716,7 @@ var notifications = {//{{{3
 var apps = {//{{{3
 
     list: [],
-    lineHeight: 2,
+    lineHeight: 1,
     topMargin: 6,
     bottomMargin: 4,
     bottomMargin2: 4,
@@ -693,6 +733,7 @@ var apps = {//{{{3
     isStrict:1,
     isAuto:1,
     filter:'',
+    xoffset:0,
     printPage: function () {//{{{4
 
         if (apps.runState==2){
@@ -730,21 +771,23 @@ var apps = {//{{{3
 
             //uncomment next line to enable short name for apps;
             //app.name=app.name.replace(/(?<!^| )[aeiouAEIOU](?=[^ ])/g,'');
+            //var printlen=apps.appWidth - 2 + apps.xoffset
+            var printlen=app.name.length
             print(app.x0, app.y, '_' +
 
-                app.name.substring(0, apps.appWidth - 2),
+                app.name.substring(0, printlen),
                 color.scheme('[color.prefScheme].apps.name.base'));
             //uncomment to disable second line
-            print(app.x0, app.y+1, '  ' +
+            /*print(app.x0, app.y+1, '  ' +
 
                 app.name.substr(apps.appWidth - 2,apps.appWidth - 3),
-                color.scheme('[color.prefScheme].apps.name.base'));
+                color.scheme('[color.prefScheme].apps.name.base'));*/
 
 
 
             print(app.x0 , app.y, '_' , color.scheme('[color.prefScheme].apps.name.dash'));
-            printCapital(app.x0 + 1, app.y, app.name.substring(0, apps.appWidth - 2), color.scheme('[color.prefScheme].apps.name.accent'));
-            printCapital(app.x0 + 2, app.y+1, app.name.substr(apps.appWidth -2, apps.appWidth - 3), color.scheme('[color.prefScheme].apps.name.accent'));
+            printCapital(app.x0 + 1, app.y, app.name.substring(0, printlen), color.scheme('[color.prefScheme].apps.name.accent'));
+            /*printCapital(app.x0 + 2, app.y+1, app.name.substr(apps.appWidth -2, apps.appWidth - 3), color.scheme('[color.prefScheme].apps.name.accent'));*/
 
 
 
@@ -752,9 +795,12 @@ var apps = {//{{{3
             print(0,5,rightPad(appPos,4,' '),color.scheme('[color.prefScheme].keyboard.key'))
             //save and take break if exhaused
             y += apps.lineHeight;
+            // uncomment for grid desplay, default compact desplay
             if ( y >= apps.topMargin + apps.lines *apps.lineHeight) {
                 y=apps.topMargin;
-                x += apps.appWidth;
+                
+                apps.xoffset = apps.appWidth - app.name.length - 2
+                x += apps.appWidth - apps.xoffset;
 
             }
             print(4,4,leftPad(x,3,' ')+'     '+leftPad(y,3,' '),color.scheme('[color.prefScheme].keyboard.key'))
@@ -786,11 +832,12 @@ var apps = {//{{{3
             app.name.substring(0, apps.appWidth - 2),
             highlight ? '#ff3333' : color.scheme('[color.prefScheme].apps.name.base'));
         //uncomment to disable second line
+        if (apps.lineHeight == 2){
         print(app.x0, app.y+1, '  ' +
 
             app.name.substr(apps.appWidth - 2,apps.appWidth - 3),
             highlight ? '#ff3333' : color.scheme('[color.prefScheme].apps.name.base'));
-
+        }
 
         if (highlight) {
             setTimeout(function () {
@@ -866,50 +913,54 @@ var apps = {//{{{3
         }
     },
     init: function () {//{{{4
+        if (!apps.isHidden) {
 
-        apps.isIntercept=0;
-        if (apps.isStrict) {
-            var pattern= eval('/.*'+apps.filter.toUpperCase().split('').join('.*')+'/');
-        } else {
-            var pattern= eval(('/^'+apps.filter.toLowerCase()+'.*/i').replace(' ','.*'));
+            apps.isIntercept=0;
+            if (apps.isStrict) {
+                var pattern= eval('/^[^A-Z]*'+apps.filter.toUpperCase().split('').join('.*')+'/');
+            } else {
+                var pattern= eval(('/^'+apps.filter.toLowerCase()+'.*/i').replace(' ','.*'));
+            }
+
+            apps.list=apps.list2.filter(function (v,i,a){
+                var out = pattern.test(v.name);
+                return out;
+            })
+            if (apps.isAuto && apps.list.length == 1) {
+                ap37.openApp(apps.list[0].id);
+                apps.filter = '';
+                apps.isIntercept=1;
+                setTimeout(apps.init,1);
+            }
+            print(0,5,apps.list.length,color.scheme('[color.prefScheme].bareText.shownApp'));
+            apps.lines = Math.floor(
+                (h - apps.topMargin - apps.bottomMargin) / apps.lineHeight);
+            apps.appsPerLine = Math.ceil(apps.list.length / apps.lines);
+            apps.appWidth = Math.floor(w / apps.appsPerLine);
+
+            // check minimum app name length
+            if (apps.appWidth < 1) {
+                apps.appWidth = 6;
+                apps.appsPerLine = Math.floor(w / apps.appWidth);
+                apps.isNextPageButtonVisible = true;
+                print(w - 4, h - 9, '>>>');
+                print(w - 4, h - 8, '>>>');
+            } else {
+                apps.isNextPageButtonVisible = false;
+                background.printPattern(w - 4, w, h - 9);
+            }
+
+            apps.appsPerPage = apps.lines * apps.appsPerLine;
+            apps.currentPage = 0;
+            apps.hide();
+            apps.printPage(apps.currentPage);
+
+            apps.isHidden=0;
         }
-
-        apps.list=apps.list2.filter(function (v,i,a){
-            var out = pattern.test(v.name);
-            return out;
-        })
-        if (apps.isAuto && apps.list.length == 1) {
-            ap37.openApp(apps.list[0].id);
-            apps.filter = '';
-            apps.isIntercept=1;
-            setTimeout(apps.init,1);
+        if (!appListener) {
+            ap37.setOnAppsListener(apps.construct);
+            var appListener=1;
         }
-        print(0,5,apps.list.length,color.scheme('[color.prefScheme].bareText.shownApp'));
-        apps.lines = Math.floor(
-            (h - apps.topMargin - apps.bottomMargin) / apps.lineHeight);
-        apps.appsPerLine = Math.ceil(apps.list.length / apps.lines);
-        apps.appWidth = Math.floor(w / apps.appsPerLine);
-
-        // check minimum app name length
-        if (apps.appWidth < 6) {
-            apps.appWidth = 6;
-            apps.appsPerLine = Math.floor(w / apps.appWidth);
-            apps.isNextPageButtonVisible = true;
-            print(w - 4, h - 9, '>>>');
-            print(w - 4, h - 8, '>>>');
-        } else {
-            apps.isNextPageButtonVisible = false;
-            background.printPattern(w - 4, w, h - 9);
-        }
-
-        apps.appsPerPage = apps.lines * apps.appsPerLine;
-        apps.currentPage = 0;
-
-        apps.hide();
-        apps.printPage(apps.currentPage);
-
-        apps.isHidden=0;
-        ap37.setOnAppsListener(apps.construct);
     },
     hide: function () {//{{{4
 
@@ -1273,4 +1324,5 @@ function arrayFill(value, length) {//{{{3
 
 init();
 })();
+
 
